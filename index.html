@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word Guessing Game</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f3f3f3;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    #word-display {
+        font-size: 24px;
+        margin-top: 20px;
+    }
+
+    #guess-input {
+        margin-top: 20px;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #submit-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #submit-btn:hover {
+        background-color: #45a049;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #timer {
+        margin-top: 20px;
+        font-size: 20px;
+    }
+
+    #retry-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    #retry-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Word Guessing Game</h1>
+    <div id="word-display">Loading...</div>
+    <input type="text" id="guess-input" placeholder="Enter your guess">
+    <button id="submit-btn">Submit</button>
+    <button id="retry-btn" style="display: none;">Retry</button>
+    <div id="result"></div>
+    <div id="timer">Timer: <span id="timer-value">10</span></div>
+</div>
+
+<script>
+    // List of words for the game
+    const words = ['apple', 'banana', 'orange', 'strawberry', 'watermelon', 'pineapple', 'kiwi', 'grape', 'peach', 'blueberry'];
+
+    // Get random word from the list
+    let randomWord = words[Math.floor(Math.random() * words.length)];
+
+    // Display the random word
+    document.getElementById('word-display').textContent = randomWord;
+
+    // Get input, submit button, result, retry button, and timer elements
+    const guessInput = document.getElementById('guess-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const retryBtn = document.getElementById('retry-btn');
+    const resultDiv = document.getElementById('result');
+    const timerValueSpan = document.getElementById('timer-value');
+
+    // Add event listener to the submit button
+    submitBtn.addEventListener('click', () => {
+        const guess = guessInput.value.toLowerCase().trim(); // Convert guess to lowercase and remove leading/trailing spaces
+        if (guess === randomWord) {
+            resultDiv.textContent = 'Congratulations! You guessed the word correctly.';
+        } else {
+            resultDiv.textContent = 'Incorrect guess. Try again.';
+        }
+    });
+
+    // Timer for word change
+    const WORD_CHANGE_TIME = 10; // 10 seconds
+    const MAX_ATTEMPTS = 5; // Maximum number of attempts
+    let timerCountdown = WORD_CHANGE_TIME;
+    let attempts = 0;
+
+    function updateTimer() {
+        timerValueSpan.textContent = timerCountdown;
+        timerCountdown--;
+        if (timerCountdown < 0) {
+            changeWord();
+        }
+    }
+
+    // Start the timer
+    const timerInterval = setInterval(updateTimer, 1000);
+
+    function changeWord() {
+        randomWord = words[Math.floor(Math.random() * words.length)];
+        document.getElementById('word-display').textContent = randomWord;
+        resultDiv.textContent = ''; // Clear previous result
+        timerCountdown = WORD_CHANGE_TIME;
+        attempts++;
+        if (attempts >= MAX_ATTEMPTS) {
+            clearInterval(timerInterval);
+            document.getElementById('timer').style.display = 'none';
+            guessInput.disabled = true;
+            submitBtn.disabled = true;
+            retryBtn.style.display = 'inline-block';
+        }
+    }
+
+    // Retry button event listener
+    retryBtn.addEventListener('click', () => {
+        attempts = 0;
+        document.getElementById('timer').style.display = 'block';
+        guessInput.disabled = false;
+        submitBtn.disabled = false;
+        retryBtn.style.display = 'none';
+        timerCountdown = WORD_CHANGE_TIME;
+        timerInterval = setInterval(updateTimer, 1000);
+    });
+</script>
+</body>
+</html>
